@@ -42,11 +42,15 @@ jobs:
         with:
           cluster_name: portfolio-cluster
 
-      # Step 7: Deploy manifests to Kind
+      # Step 7: Deploy manifests to Kind (skip kind-config.yaml)
       - name: Deploy to Kind
         run: |
           kubectl create namespace portfolio-ns || true
-          kubectl apply -f K8s/ -n portfolio-ns
+          for file in K8s/*.yaml; do
+            if [[ "$file" != "K8s/kind-config.yaml" ]]; then
+              kubectl apply -f "$file" -n portfolio-ns
+            fi
+          done
 
       # Step 8: Verify deployment
       - name: Verify pods
